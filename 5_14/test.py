@@ -38,10 +38,11 @@ def getSibling(soup):
         count = count + 1
 
 
-demo = getText(url)
-soup = BeautifulSoup(demo, 'html.parser')
-getChildren(soup)
-print("================================")
-getParents(soup)
-print("================================")
-getSibling(soup)
+if __name__ == "__main__":
+    demo = getText(url)
+    soup = BeautifulSoup(demo, 'html.parser')
+    getChildren(soup)
+    print("================================")
+    getParents(soup)
+    print("================================")
+    getSibling(soup)
