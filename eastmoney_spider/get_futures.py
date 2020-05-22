@@ -6,7 +6,7 @@ from time import sleep
 import time
 
 
-print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+print(time.strftime("%Y-%m-%d", time.localtime()))
 
 wd = webdriver.Chrome()
 wd.maximize_window()
@@ -57,9 +57,9 @@ def main():
                     print("---多单量---")
                 elif id == 'kt':
                     print("---空单量---")
-                for num in numdict:
-                    result = getINFO(id, numdict[num])
-                    print(num + ":" + result)
+                for name, num in numdict.items():
+                    result = getINFO(id, num)
+                    print(name + ":" + result)
         except selenium.common.exceptions.NoSuchElementException:
             print('没有抓取到相关数据呢，是不是还没到时间？')
             continue
