@@ -4,6 +4,9 @@ from selenium.webdriver.support.select import Select  # 导入Select包
 from selenium.webdriver.common.action_chains import ActionChains  # 导入鼠标事件包
 from time import sleep
 import time
+import pymysql
+from selenium.webdriver.common.keys import Keys
+
 
 class Spider:
 
@@ -45,26 +48,54 @@ class Spider:
         result = element.text
         return result
 
-    def printInfo(self):
-        print(time.strftime("%Y-%m-%d", time.localtime()))
+    def connectToMySQL(self, host, port, user, password, dbname, charset):
+        try:
+            self.conn = pymysql.connect(host=host,
+                                        port=port,
+                                        user=user,
+                                        password=password,
+                                        db=dbname,
+                                        charset=charset)
+            self.cur = self.conn.cursor()
+        except:
+            print('连接不成功')
+        sql = """
+        CREATE TABLE IF NOT EXISTS future_info(
+        date Date,
+        location CHAR(10) NOT NULL,
+        name CHAR(10) NOT NULL,
+        multi_quantity INT NOT NULL,
+        empty_quantity INT NOT NULL
+        )ENGINE=innodb DEFAULT CHARSET=utf8;
+        """
+        # 执行SQL语句
+        self.cur.execute(sql)
+
+    def insertInfo(self):
+        cow_close = self.wd.find_element_by_css_selector('#intellcontclose')
+        ActionChains(self.wd).move_to_element(cow_close).click().perform()
         for infodict in self.varietyls:
             try:
-                print("============" + infodict['s1_text'] + "============")
+                date = time.strftime("%Y-%m-%d", time.localtime())
+                location = infodict['s1_text']
                 self.getHTML(infodict)
-                for id in self.ids:
-                    if id == 'dt':
-                        print("---多单量---")
-                    elif id == 'kt':
-                        print("---空单量---")
-                    for name, num in self.numdict.items():
-                        result = self.getEachInfo(id, num)
-                        print(name + ":" + result)
+                search_botton = self.wd.find_element_by_css_selector('[onclick="searchData(false)"]')
+                search_botton.click()
+                sleep(2)
+                for name, num in self.numdict.items():
+                    multi_quantity = self.getEachInfo('dt', num)
+                    empty_quantity = self.getEachInfo('kt', num)
+                    info = [date, location, name, multi_quantity, empty_quantity]
+                    sql = "INSERT INTO future_info(date, location, name, multi_quantity, empty_quantity) values(%s, %s, %s, %s, %s)"
+                    self.cur.execute(sql, tuple(info))
+                    self.conn.commit()
             except selenium.common.exceptions.NoSuchElementException:
-                print('没有抓取到相关数据呢，是不是还没到时间？')
+                print('没有抓取到相关数据，是不是还没到时间？')
                 continue
         self.wd.quit()
 
 
 if __name__ == '__main__':
     spider = Spider()
-    spider.printInfo()
+    spider.connectToMySQL("localhost", 3306, "root", "12345678", "test", "utf8")
+    spider.insertInfo()
