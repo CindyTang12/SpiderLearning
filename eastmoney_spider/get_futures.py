@@ -20,7 +20,6 @@ class Spider:
         self.varietyls = [{'s1_text': '上海期货交易所', 's1_value': '069001005', 's2_text': '螺纹钢', 's2_value': 'RB'},
                           {'s1_text': '大连商品期货交易所', 's1_value': '069001007', 's2_text': '铁矿石', 's2_value': 'I'},
                           {'s1_text': '郑州商品交易所', 's1_value': '069001008', 's2_text': '郑煤', 's2_value': 'ZC'}]
-        self.ids = ['dt', 'kt']
         self.numdict = {'永安期货': '80102901',
                         '中信期货': '80050220',
                         '银河期货': '80103797',
@@ -37,15 +36,15 @@ class Spider:
         s1 = self.wd.find_element_by_id("futures_exchange")  # 这里先找到select的标签的id
         Select(s1).select_by_visible_text(infodict['s1_text'])  # 通过文本值定位
         Select(s1).select_by_value(infodict['s1_value'])  # 通过value值定位
-        sleep(2)
+        sleep(1)
         # 选择该交易所需要的品种
         s2 = self.wd.find_element_by_id("futures_variety")  # 这里先找到select的标签的id
         Select(s2).select_by_visible_text(infodict['s2_text'])  # 通过文本值定位
         Select(s2).select_by_value(infodict['s2_value'])  # 通过value值定位
-        sleep(2)
+        sleep(1)
         s3 = self.wd.find_element_by_css_selector('#inputDate')
         ActionChains(self.wd).move_to_element(s3).click().perform()
-        sleep(2)
+        sleep(1)
         iframe = self.wd.find_elements_by_tag_name("iframe")[3]
         self.wd.switch_to.frame(iframe)
         try:
@@ -53,7 +52,7 @@ class Spider:
         except selenium.common.exceptions.NoSuchElementException:
             s4 = self.wd.find_element_by_css_selector('.Wselday')
         ActionChains(self.wd).move_to_element(s4).click().perform()
-        sleep(2)
+        sleep(1)
         self.wd.switch_to.default_content()
 
     def getFutureInfo(self, id, num):
