@@ -28,23 +28,23 @@ class Spider:
         self.future_link_dict = {'螺纹钢': 'http://quote.eastmoney.com/center/gridlist2.html#futures_113_7',
                                  '铁矿石': 'http://quote.eastmoney.com/center/gridlist2.html#futures_114_13',
                                  '动力煤': 'http://quote.eastmoney.com/center/gridlist2.html#futures_115_17'}
-
+        self.futures_contract = {}
         cow_close = self.wd.find_element_by_css_selector('#intellcontclose')
         ActionChains(self.wd).move_to_element(cow_close).click().perform()
 
-    def getHTML(self, infodict):
+    def getFutureHTML(self, infodict):
         s1 = self.wd.find_element_by_id("futures_exchange")  # 这里先找到select的标签的id
         Select(s1).select_by_visible_text(infodict['s1_text'])  # 通过文本值定位
         Select(s1).select_by_value(infodict['s1_value'])  # 通过value值定位
-        sleep(1)
+        sleep(2)
         # 选择该交易所需要的品种
         s2 = self.wd.find_element_by_id("futures_variety")  # 这里先找到select的标签的id
         Select(s2).select_by_visible_text(infodict['s2_text'])  # 通过文本值定位
         Select(s2).select_by_value(infodict['s2_value'])  # 通过value值定位
-        sleep(1)
+        sleep(2)
         s3 = self.wd.find_element_by_css_selector('#inputDate')
         ActionChains(self.wd).move_to_element(s3).click().perform()
-        sleep(1)
+        sleep(2)
         iframe = self.wd.find_elements_by_tag_name("iframe")[3]
         self.wd.switch_to.frame(iframe)
         try:
@@ -52,7 +52,7 @@ class Spider:
         except selenium.common.exceptions.NoSuchElementException:
             s4 = self.wd.find_element_by_css_selector('.Wselday')
         ActionChains(self.wd).move_to_element(s4).click().perform()
-        sleep(1)
+        sleep(2)
         self.wd.switch_to.default_content()
 
     def getFutureInfo(self, id, num):
@@ -65,8 +65,10 @@ class Spider:
         result = element.text
         return result
 
-    def getVarietyInfo(self):
-        pass
+    def getFutureContract(self, variety):
+        contract = self.wd.find_element_by_css_selector('#futures_contract').get_attribute('value')
+        self.futures_contract[variety] = 'http://quote.eastmoney.com/qihuo/' + contract + '.html'
+        sleep(2)
 
     def connectToMySQL(self, host, port, user, password, dbname, charset):
         try:
@@ -94,7 +96,9 @@ class Spider:
     def insertFutureInfo(self):
         for infodict in self.varietyls:
             location = infodict['s1_text']
-            self.getHTML(infodict)
+            variety = infodict['s2_text']
+            self.getFutureHTML(infodict)
+            self.getFutureContract(variety)
             search_botton = self.wd.find_element_by_css_selector('[onclick="searchData(false)"]')
             search_botton.click()
             sleep(2)
@@ -110,11 +114,16 @@ class Spider:
                     print('别爬了，今天' + location + '不开张，明天再来。')
                     break
                 sleep(2)
-        self.wd.quit()
 
+    def insertVarietyInfo(self):
+        self.futures_contract['郑煤'] = 'http://quote.eastmoney.com/qihuo/zc009.html'
+        for variety, link in self.futures_contract.items():
+            self.wd.get(link)
+            sleep(2)
 
 
 if __name__ == '__main__':
     spider = Spider()
     spider.connectToMySQL("localhost", 3306, "root", "12345678", "test", "utf8")
     spider.insertFutureInfo()
+    spider.insertVarietyInfo()
