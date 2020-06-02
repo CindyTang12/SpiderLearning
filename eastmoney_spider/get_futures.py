@@ -13,7 +13,6 @@ class Spider:
     def __init__(self):
         self.wd = webdriver.Chrome()
         self.date = time.strftime("%Y-%m-%d", time.localtime())
-        self.date = '2020-06-01'
         self.url = "http://data.eastmoney.com/futures/sh/data.html?date=" + self.date + "&ex=069001005&va=RB&ct=rb2010"
         sleep(2)
         self.wd.get(self.url)
