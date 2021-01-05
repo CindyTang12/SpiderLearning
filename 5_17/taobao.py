@@ -4,20 +4,11 @@ import re
 
 def getHTMLText(url):
     try:
-        header = {
-            'authority': 's.taobao.com',
-            'cache-control': 'max-age=0',
-            'upgrade-insecure-requests': '1',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36',
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'sec-fetch-site': 'none',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-user': '?1',
-            'sec-fetch-dest': 'document',
-            'accept-language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
-            'cookie': 'hng=CN%7Czh-CN%7CCNY%7C156; thw=cn; lgc=%5Cu661F%5Cu8349%5Cu4E0D%5Cu662F%5Cu8349; tracknick=%5Cu661F%5Cu8349%5Cu4E0D%5Cu662F%5Cu8349; tg=0; enc=5WO4yTuzoCYU4ZovRkRXEy1hNlCroaeWWJlIbUEP3BhMOqUqg51xcVZFKEC7TZ45YWrUrkBKr%2BRafjRNHSVVtQ%3D%3D; miid=1715154992670629735; cna=9Cr3FgSodyQCASQEnpItVQ/x; UM_distinctid=171d012bfb617a-0b4552dc0c38a2-30657701-13c680-171d012bfb71a5; t=589cb708fa5caee2b95519914bebfc98; sgcookie=EBpfr4FhiWiBNDFgtWv2e; uc3=nk2=s0%2BBNcUsWy99NQ%3D%3D&id2=UUGk2VB%2FwR47Ow%3D%3D&lg2=U%2BGCWk%2F75gdr5Q%3D%3D&vt3=F8dBxGXEmrH8hk5dYnU%3D; uc4=nk4=0%40sTB3VtbIszgfTd0NHWSpMuFR%2B0Rk&id4=0%40U2OT6ZfdC4a9a81hmrmrP8Ga9Py%2B; _cc_=U%2BGCWk%2F7og%3D%3D; tfstk=cJxPBsmmkMAjfcivWgIFde70R3_RZ8KMvSWCrF9joYGtkOQlilNdnr7GuN1tmaf..; mt=ci=61_1; v=0; cookie2=1a7e3552b0dd66155c60f8e286fb9eab; _tb_token_=fd75f05e3ab9e; alitrackid=www.taobao.com; lastalitrackid=www.taobao.com; _nk_=%5Cu661F%5Cu8349%5Cu4E0D%5Cu662F%5Cu8349; uc1=cookie14=UoTUM2cVHyqWaA%3D%3D; JSESSIONID=2C7CEAF5245BE99A48D257D82DFCF792; l=eB_1rFWqqefD4weCBOfaPurza779bIRYnuPzaNbMiT5PO35p5qbNWZAXdr89CnhNh6JeR3ucM4eWBeYBcIv4n5U62j-laTMmn; isg=BLe3WxcfpU9JfyLJWulx5fD4Rq0BfIveK-MsEAlkxgbtuNf6EU72LsuanxDmamNW',
+        headers = {
+            'cookie': 'miid=1296267545453648768; t=b4d385e2145f596a67961e4dd08e9a8f; cna=pqwcFXxbJjACAXWIA7AFEfA8; thw=cn; tracknick=tb487881011; lgc=tb487881011; _cc_=UIHiLt3xSw%3D%3D; tg=0; enc=%2FTqA3gAexHOKU0cyPYbSWM1pGS8vgnlEK3EMnkYd2T%2BlB%2BJh18hxryREG48c%2BYmdk7yfvbSMCBDQExP23eUm3w%3D%3D; hng=CN%7Czh-CN%7CCNY%7C156; x=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0%26__ll%3D-1%26_ato%3D0; cookie2=19ef67fdfc3f433776e5e9cafaf6a8ea; v=0; _tb_token_=08b7e3e7e183; _m_h5_tk=62383241b06635c64b07942e50e47d9d_1562004576179; _m_h5_tk_enc=0465da475a8335f8fd8d9ef6bb280a71; unb=4235284520; sg=101; _l_g_=Ug%3D%3D; skt=c571ae590b7580cb; cookie1=AnQIvxj44XbyESoVNTVtwfJRB8W%2BbAPV%2BVZMWhAghjk%3D; csg=23f40375; uc3=vt3=F8dBy34cs3fc7ebsEqk%3D&id2=Vy67WD1MZomrsw%3D%3D&nk2=F5RBzeKtOazPVJc%3D&lg2=UtASsssmOIJ0bQ%3D%3D; existShop=MTU2MTk5NTE3MQ%3D%3D; dnk=tb487881011; _nk_=tb487881011; cookie17=Vy67WD1MZomrsw%3D%3D; mt=ci=21_1; uc1=cookie14=UoTaGdT0tHdY5w%3D%3D&lng=zh_CN&cookie16=VT5L2FSpNgq6fDudInPRgavC%2BQ%3D%3D&existShop=false&cookie21=VFC%2FuZ9aj3yE&tag=8&cookie15=UIHiLt3xD8xYTw%3D%3D&pas=0; whl=-1%260%260%261561995222497; isg=BHNzJqpkKgCWtOesccf13ZRUAnddACwkF8iwAyUQzxLJJJPGrXiXutG23hRvn19i; l=bBMxcfBPv539-OTkBOCanurza77OSIRYYuPzaNbMi_5K-6T_2qQOkAuQFF96Vj5Rs4YB4G2npwJ9-etkq',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
         }
-        r = requests.get(url, headers=header)
+        r = requests.get(url, headers=headers)
         r.raise_for_status()
         r.encoding = r.apparent_encoding
         return r.text
@@ -59,7 +50,8 @@ def main():
     for i in range(depth):
         url = "https://s.taobao.com/search?q=" + goodname + "&s=" + str(i * 44)
         html = getHTMLText(url)
-        parsePage(infols, html)
+        print(html)
+        # parsePage(infols, html)
     printGoodList(infols, num)
 
 
